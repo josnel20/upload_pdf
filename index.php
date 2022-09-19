@@ -9,14 +9,15 @@
   if (isset($_POST['upload'])) {
   	// Nome que vem do post
   	$pdf = $_FILES['pdf']['name'];
+    $pdf2 = $_FILES['pdf2']['name'];
 
   	//  Post da lejenda descrição pdf_test
   	$pdf__text = mysqli_real_escape_string($db, $_POST['pdf__text']);
 
   	// caminho onde será salvo o arquivo
-  	$caminho = "upload/".basename($pdf);
+  	$caminho = "upload/".basename($pdf && $pdf2);
 
-  	$sql = "INSERT INTO upload (pdf, pdf__text) VALUES ('$pdf', '$pdf__text')";
+  	$sql = "INSERT INTO upload (pdf, pdf2, pdf__text) VALUES ('$pdf', '$pdf2', '$pdf__text')";
   	
     // execução da instrução.
   	mysqli_query($db, $sql);
@@ -71,6 +72,7 @@
     while ($row = mysqli_fetch_array($result)) {
       echo "<div id='img_div'>";
       	echo "<img src='upload/".$row['pdf']."' >";
+          echo "<img src='upload/".$row['pdf2']."' >";
       	echo "<p>".$row['pdf__text']."</p>";
       echo "</div>";
     }
@@ -79,6 +81,7 @@
   	<input type="hidden" name="tamanho" value="1000000">
   	<div>
   	  <input type="file" name="pdf">
+        <input type="file" name="pdf2">
   	</div>
   	<div>
       <textarea 
