@@ -1,105 +1,102 @@
 <?php
-  // conectando com banco de dados local
-  $db = mysqli_connect("localhost", "root", "", "test");
+error_reporting(0);
+ // conectando com banco de dados local
+ $db = mysqli_connect("localhost", "root", "", "test");
 
-  // validando mensagem de status de conecção
-  $msg = "";
+ // validando mensagem de status de conecção
+ $msg = "";
+ 
+    $pdf = $_FILES['pictures'];
+if (!empty($pdf)) {
+    $pdf_desc = reArrayFiles($pdf);
 
-  // vefificar do uplod / tratativa do arquivo ...
-  if (isset($_POST['upload'])) {
-  	// Nome que vem do post
-  	$pdf = $_FILES['pdf']['name'];
-    $pdf2 = $_FILES['pdf2']['name'];
+    foreach($pdf_desc as $val)
+    {
+        // execução no banco.
+        $sql = "INSERT INTO upload (pdf, pdf__text) VALUES ('$var', '$caminho')";
+        
+  	    mysqli_query($db, $sql);
+        
+        $caminho = "upload/".basename('pictures');
 
-  	//  Post da lejenda descrição pdf_test
-  	$pdf__text = mysqli_real_escape_string($db, $_POST['pdf__text']);
+        $novoNome = date('YmdHis',time()).mt_rand().'.pdf';
+        move_uploaded_file($val['tmp_name'],'upload/'.$novoNome);
 
-  	// caminho onde será salvo o arquivo
-  	$caminho = "upload/".basename($pdf);
-    $caminho2 = "upload/".basename($pdf2);
-
-  	$sql = "INSERT INTO upload (pdf, pdf2, pdf__text) VALUES ('$pdf', '$pdf2', '$caminho')";
-  	
-    // execução da instrução.
-  	mysqli_query($db, $sql);
-
-  	if (move_uploaded_file($_FILES['pdf']['tmp_name'],$caminho)) {
-        $msg = "Funcionou...";
-  	}else{
-  		$msg = "Algo deu errado no ubload";
-  	}if (move_uploaded_file($_FILES['pdf2']['tmp_name'],$caminho)) {
-        $msg = "Funcionou...";
-      }else{
-          $msg = "Algo deu errado no ubload";
-      }
+    }
 }
-  $result = mysqli_query($db, "SELECT * FROM upload");
+function reArrayFiles($file)
+{
+    $file_ary = array();
+    $file_count = count($file['name']);
+    $file_key = array_keys($file);
+    
+    for($i=0;$i<$file_count;$i++)
+    {
+        foreach($file_key as $val)
+        {
+            $file_ary[$i][$val] = $file[$val][$i];
+        }
+        
+    }
+    return $file_ary;
+} 
+echo 'Uploads enviados com sucesso';
+/**echo '<script>
+$(document).ready(function(){
+$("#enviar").click(function(){
+alert("imagem enviada com sucesso");
+});
+});
+</script>';*/
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<title>Upload de PDF</title>
-<style type="text/css">
-   #content{
-   	width: 50%;
-   	margin: 20px auto;
-   	border: 1px solid #cbcbcb;
-   }
-   form{
-   	width: 50%;
-   	margin: 20px auto;
-   }
-   form div{
-   	margin-top: 5px;
-   }
-   #img_div{
-   	width: 80%;
-   	padding: 5px;
-   	margin: 15px auto;
-   	border: 1px solid #cbcbcb;
-   }
-   #img_div:after{
-   	content: "";
-   	display: block;
-   	clear: both;
-   }
-   img{
-   	float: left;
-   	margin: 5px;
-   	width: 300px;
-   	height: 140px;
-   }
-</style>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Teste Capital</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script type="text/javascript" src="jquery-2.1.3.min.js"></script>
 </head>
 <body>
-<div id="content">
-  <?php
-    while ($row = mysqli_fetch_array($result)) {
-      echo "<div id='img_div'>";
-      	echo "<img src='upload/".$row['pdf']."' >";
-          echo "<img src='upload/".$row['pdf2']."' >";
-      	echo "<p>".$row['pdf__text']."</p>";
-      echo "</div>";
-    }
-  ?>
-  <form method="POST" action="index.php" enctype="multipart/form-data">
-  	<input type="hidden" name="tamanho" value="1000000">
-  	<div>
-  	  <input type="file" name="pdf">
-        <input type="file" name="pdf2">
-  	</div>
-  	<div>
-      <textarea 
-      	id="text" 
-      	cols="40" 
-      	rows="4" 
-      	name="pdf__text" 
-      	placeholder="descrição do Upload"></textarea>
-  	</div>
-  	<div>
-  		<button type="submit" name="upload">Enviar</button>
-  	</div>
-  </form>
-</div>
+<div class="conteudo">
+        <style>
+            table{
+                margin: 0 auto;
+            }
+            img{
+                width: 200px;
+                display: block;
+                margin-left: auto;
+                margin-right: auto
+            }
+            h1{
+            text-align: center;
+            }
+            #enviar{
+                background-color:#f5041b;
+                color:white;
+                padding:10px;
+                border: none;
+                border-radius: 10px;
+           }
+        </style>
+        <div class="container">
+            <div class="jumbotron">
+            <h1>  <b>Upload PDF</b></h1>
+           
+            <form action="" method="post" enctype="multipart/form-data">
+                <input type="file" name="pictures[]" accept="upload/*" ><br>
+                <input type="file" name="pictures[]" accept="upload/*" ><br><br><br>
+                <input type="submit" value="Enviar" name="enviar" id="enviar"/>
+            </form>
+            </div>
+        </div>
+    </div>
+    <script src="jquery-2.1.3.min.js"></script>
 </body>
 </html>
