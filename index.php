@@ -15,19 +15,24 @@
   	$pdf__text = mysqli_real_escape_string($db, $_POST['pdf__text']);
 
   	// caminho onde será salvo o arquivo
-  	$caminho = "upload/".basename($pdf && $pdf2);
+  	$caminho = "upload/".basename($pdf);
+    $caminho2 = "upload/".basename($pdf2);
 
-  	$sql = "INSERT INTO upload (pdf, pdf2, pdf__text) VALUES ('$pdf', '$pdf2', '$pdf__text')";
+  	$sql = "INSERT INTO upload (pdf, pdf2, pdf__text) VALUES ('$pdf', '$pdf2', '$caminho')";
   	
     // execução da instrução.
   	mysqli_query($db, $sql);
 
-  	if (move_uploaded_file($_FILES['pdf']['tmp_name'], $caminho)) {
-  		$msg = "Funcionou...";
+  	if (move_uploaded_file($_FILES['pdf']['tmp_name'],$caminho)) {
+        $msg = "Funcionou...";
   	}else{
   		$msg = "Algo deu errado no ubload";
-  	}
-  }
+  	}if (move_uploaded_file($_FILES['pdf2']['tmp_name'],$caminho)) {
+        $msg = "Funcionou...";
+      }else{
+          $msg = "Algo deu errado no ubload";
+      }
+}
   $result = mysqli_query($db, "SELECT * FROM upload");
 ?>
 <!DOCTYPE html>
