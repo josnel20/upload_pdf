@@ -5,49 +5,28 @@ error_reporting(0);
 
  // validando mensagem de status de conecção
  $msg = "";
- 
-    $pdf = $_FILES['pictures'];
-if (!empty($pdf)) {
-    $pdf_desc = reArrayFiles($pdf);
 
-    foreach($pdf_desc as $val)
-    {
-        // execução no banco.
-        $sql = "INSERT INTO upload (pdf, pdf__text) VALUES ('$var', '$caminho')";
-        
-  	    mysqli_query($db, $sql);
-        
-        $caminho = "upload/".basename('pictures');
-
-        $novoNome = date('YmdHis',time()).mt_rand().'.pdf';
-        move_uploaded_file($val['tmp_name'],'upload/'.$novoNome);
-
-    }
-}
-function reArrayFiles($file)
+foreach ($_FILES["pictures"]["error"] as $key => $error)
 {
-    $file_ary = array();
-    $file_count = count($file['name']);
-    $file_key = array_keys($file);
-    
-    for($i=0;$i<$file_count;$i++)
+       $tmp_name = $_FILES["pictures"]["tmp_name"][$key];
+       if (!$tmp_name) continue;
+
+       $name = basename($_FILES["pictures"]["name"][$key]);
+
+    if ($error == UPLOAD_ERR_OK)
     {
-        foreach($file_key as $val)
-        {
-            $file_ary[$i][$val] = $file[$val][$i];
-        }
-        
+        if ( move_uploaded_file($tmp_name, "upload/".$name) )
+            $uploaded_array[] .= "Eviado com sucesso '".$name."'.<br/>\n";
+            $sql = "INSERT INTO upload (pdf, pdf__text) VALUES ('$name', '$error')";
+  	        mysqli_query($db, $sql);
+            if ($sql) {
+                echo'
+                <script>swal("Good job!", "You clicked the button!", "success");</script>
+                ';
+            }
     }
-    return $file_ary;
-} 
-echo 'Uploads enviados com sucesso';
-/**echo '<script>
-$(document).ready(function(){
-$("#enviar").click(function(){
-alert("imagem enviada com sucesso");
-});
-});
-</script>';*/
+    else $errormsg .= "Erro. [".$error."] on file '".$name."'<br/>\n";
+}
 ?>
 <!DOCTYPE html>
 <html>
