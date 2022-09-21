@@ -1,5 +1,5 @@
 <?php
-error_reporting(0);
+
  // conectando com banco de dados local
  $db = mysqli_connect("localhost", "root", "", "test");
 
@@ -15,7 +15,7 @@ if (!empty($pdf)) {
     foreach($pdf_desc as $val)
     {
         // execução no banco.
-        $sql = "INSERT INTO upload (pdf,pdf2, pdf__text) VALUES ('$novoNome','$pdf[1]', '$caminho')";
+        $sql = "INSERT INTO upload (pdf,pdf2, pdf__text) VALUES ('$pdf[0]','$pdf[1]', '$caminho')";
         
   	    mysqli_query($db, $sql);
         

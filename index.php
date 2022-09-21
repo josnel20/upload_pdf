@@ -1,33 +1,3 @@
-<?php
-error_reporting(0);
- // conectando com banco de dados local
- $db = mysqli_connect("localhost", "root", "", "test");
-
- // validando mensagem de status de conecção
- $msg = "";
-
-foreach ($_FILES["pictures"]["error"] as $key => $error)
-{
-       $tmp_name = $_FILES["pictures"]["tmp_name"][$key];
-       if (!$tmp_name) continue;
-
-       $name = basename($_FILES["pictures"]["name"][$key]);
-
-    if ($error == UPLOAD_ERR_OK)
-    {
-        if ( move_uploaded_file($tmp_name, "upload/".$name) )
-            $uploaded_array[] .= "Eviado com sucesso '".$name."'.<br/>\n";
-            $sql = "INSERT INTO upload (pdf, pdf__text) VALUES ('$name', '$error')";
-  	        mysqli_query($db, $sql);
-            if ($sql) {
-                echo'
-                <script>swal("Good job!", "You clicked the button!", "success");</script>
-                ';
-            }
-    }
-    else $errormsg .= "Erro. [".$error."] on file '".$name."'<br/>\n";
-}
-?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -74,6 +44,56 @@ foreach ($_FILES["pictures"]["error"] as $key => $error)
                 <input type="submit" value="Enviar" name="enviar" id="enviar"/>
             </form>
             </div>
+        </div>
+
+
+        <div class="container">
+            <div class="jumbotron">
+            <h2>Criar json</h2><br>
+            <h5>A saída no formato Json será criada assim que enviar os arquivos</h5>
+            <?php
+error_reporting(0);
+ // conectando com banco de dados local
+ $db = mysqli_connect("localhost", "root", "", "test");
+
+ // validando mensagem de status de conecção
+ $msg = "";
+
+foreach ($_FILES["pictures"]["error"] as $key => $error)
+{
+       $tmp_name = $_FILES["pictures"]["tmp_name"][$key];
+       if (!$tmp_name) continue;
+
+       $name = basename($_FILES["pictures"]["name"][$key]);
+
+    if ($error == UPLOAD_ERR_OK)
+    {
+        if ( move_uploaded_file($tmp_name, "upload/".$name) )
+            $uploaded_array[] .= "Eviado com sucesso '".$name."'.<br/>\n";
+            $sql = "INSERT INTO upload (pdf, pdf__text) VALUES ('$name', '$error')";
+  	       $certo = $sql;
+
+            mysqli_query($db, $sql);
+            //json
+            //javascrypt date
+            $array=[
+                'Instancia do Upload',
+                'Arquivo incluido no banco: ' => $name,
+                'Gerado com sucesso' => [
+                    'Data do Upload'=> '20/09/2022',
+                    'Posicao do arquivo no aray' => $key,
+                ]
+            ];
+            $json= json_encode($array, JSON_PRETTY_PRINT);
+            echo "<pre>";
+            print_r($json);
+            echo "<pre>";
+    }
+    else $errormsg .= "Erro. [".$error."] on file '".$name."'<br/>\n";
+}
+?>
+            </div>
+        
         </div>
     </div>
     <script src="jquery-2.1.3.min.js"></script>
