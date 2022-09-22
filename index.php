@@ -34,18 +34,16 @@
                 border-radius: 10px;
            }
         </style>
-        <div class="container">
-            <div class="jumbotron">
-            <h1>  <b>Upload PDF</b></h1>
-           
-            <form action="" method="post" enctype="multipart/form-data">
-                <input type="file" name="pictures[]" accept="upload/*" ><br>
+<div class="container">
+        <div class="jumbotron">
+        <h1><b>Upload PDF</b></h1>
+        <form action="" method="post" enctype="multipart/form-data">
+            <input type="file" name="pictures[]" accept="upload/*" ><br>
                 <input type="file" name="pictures[]" accept="upload/*" ><br><br><br>
-                <input type="submit" value="Enviar" name="enviar" id="enviar"/>
-            </form>
-            </div>
-        </div>
-
+            <input type="submit" value="Enviar" name="enviar" id="enviar"/>
+        </form>
+    </div>
+</div>
 
         <div class="container">
             <div class="jumbotron">
@@ -60,38 +58,50 @@ error_reporting(0);
  $msg = "";
 
 foreach ($_FILES["pictures"]["error"] as $key => $error)
-{
+{       
+
        $tmp_name = $_FILES["pictures"]["tmp_name"][$key];
+       
        if (!$tmp_name) continue;
 
        $name = basename($_FILES["pictures"]["name"][$key]);
+       
+       $data_upload= date("y-m-d h:i:s");
+       $endereco_fisico= "upload/".$name;
 
     if ($error == UPLOAD_ERR_OK)
     {
         if ( move_uploaded_file($tmp_name, "upload/".$name) )
             $uploaded_array[] .= "Eviado com sucesso '".$name."'.<br/>\n";
-            $sql = "INSERT INTO upload (pdf, pdf__text) VALUES ('$name', '$error')";
-  	       $certo = $sql;
+            $sql = "INSERT INTO upload (pdf, endereco_fisico, data_upload) VALUES ('$name', '$endereco_fisico', '$data_upload')";
+  	        $certo = $sql;
 
             mysqli_query($db, $sql);
-            //json
-            //javascrypt date
+       
+            //json monstrando dados do ubload
             $array=[
                 'Instancia do Upload',
-                'Arquivo incluido no banco: ' => $name,
+                'Nome do arquivo incluido no Banco: ' => $name,
                 'Gerado com sucesso' => [
-                    'Data do Upload'=> '20/09/2022',
-                    'Posicao do arquivo no aray' => $key,
+                    'Data do Upload'=> $data_upload,
+                    'Posicao do arquivo no array' => $key,
                 ]
             ];
+            //exibição do Json
             $json= json_encode($array, JSON_PRETTY_PRINT);
             echo "<pre>";
             print_r($json);
             echo "<pre>";
+            //clink do arquivo direto do diretório.
+            echo 
+                '<div>
+                <p>Enderco local do arquivo <a href="'.$endereco_fisico.'">Endereco local do arquivo</a></p>
+                </div>';
     }
-    else $errormsg .= "Erro. [".$error."] on file '".$name."'<br/>\n";
-}
-?>
+            //validação do arquivo pdf
+            else $errormsg .= "Erro. [".$error."] no ficheiro '".$name."'<br/>\n";
+        }
+?>     
             </div>
         
         </div>

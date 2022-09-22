@@ -1,0 +1,1 @@
+"Enderco local do arquivo": "<a href="<?php echo 'upload/'.$name; ?>"><?php echo $name; ?>"</a> ",
